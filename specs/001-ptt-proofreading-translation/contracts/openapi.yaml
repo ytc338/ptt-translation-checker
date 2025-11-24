@@ -1,0 +1,74 @@
+openapi: 3.0.0
+info:
+  title: PTT Proofreading Service API
+  description: API for translating and proofreading PTT posts.
+  version: 1.0.0
+
+paths:
+  /api/proofread:
+    post:
+      summary: Scrapes, translates, and proofreads a PTT post from a URL.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: The URL of the PTT post to analyze.
+                  example: "https://www.ptt.cc/bbs/NBA/M.1763516124.A.6DC.html"
+              required:
+                - url
+      responses:
+        '200':
+          description: Successful analysis of the post.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisResult'
+        '400':
+          description: Bad Request - Invalid URL or other input error.
+        '500':
+          description: Internal Server Error - Failed to scrape or analyze the post.
+
+components:
+  schemas:
+    AnalysisResult:
+      type: object
+      properties:
+        originalContent:
+          type: string
+          description: The raw text content of the original PTT post.
+        translatedContent:
+          type: string
+          description: The translated and proofread version of the content.
+        annotations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Annotation'
+    Annotation:
+      type: object
+      properties:
+        originalSnippet:
+          type: string
+          description: The snippet from the original text that corresponds to the issue.
+        translatedSnippet:
+          type: string
+          description: The snippet from the translated text where the issue was found.
+        issueType:
+          type: string
+          description: The category of the issue (e.g., "Slang", "Grammar", "Informal").
+        explanation:
+          type: string
+          description: A detailed description of why the snippet was flagged.
+        suggestion:
+          type: string
+          description: A suggested alternative phrasing.
+      required:
+        - originalSnippet
+        - translatedSnippet
+        - issueType
+        - explanation

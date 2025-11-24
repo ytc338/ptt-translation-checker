@@ -1,0 +1,89 @@
+.annotation-list {
+  padding: 1rem;
+  background-color: transparent; /* Background handled by parent panel */
+  height: 100%;
+  overflow-y: auto;
+  border: none;
+}
+
+.annotation-list h3 {
+  margin-top: 0;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.annotation-item {
+  margin-bottom: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary); /* Slightly lighter than panel */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.annotation-item:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.annotation-item.selected {
+  border-color: var(--accent-primary);
+  background-color: rgba(59, 130, 246, 0.1); /* Tinted background */
+  box-shadow: 0 0 0 1px var(--accent-primary);
+}
+
+.annotation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.issue-type {
+  color: var(--accent-primary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.snippet {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.explanation {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+.suggestion {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-color);
+}
+
+.no-annotations {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+  font-style: italic;
+}

@@ -1,0 +1,20 @@
+/* basic styling for TextView */
+.text-view {
+  white-space: pre-wrap; /* Preserves whitespace and wraps text */
+  word-wrap: break-word; /* Breaks long words */
+  line-height: 1.8;
+  color: var(--text-primary); /* Explicitly set text color */
+  font-size: 1rem;
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-right: 0.5rem; /* Space for scrollbar */
+}
+
+.text-view .highlight {
+  background-color: rgba(59, 130, 246, 0.3); /* Blue highlight with opacity */
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--accent-primary);
+  font-weight: 500;
+  padding: 0 2px;
+  border-radius: 2px;
+}
