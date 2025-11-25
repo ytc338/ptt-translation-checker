@@ -9,3 +9,4 @@
 7. **History Entries**: Show the title of the post for each history entry.
 8. **Date UI**: Redesign the date display – current UI is ugly.
 9. **History Entries**: Refine what to show in history entries. More Post Title, Date, and URL.
+10. **new**: Add a proofreading feature to the application. Not only work on NBA but also other Chinese Gossips posts.
