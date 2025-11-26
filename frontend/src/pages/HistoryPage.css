@@ -104,3 +104,12 @@
   align-items: center;
   min-height: 50vh;
 }
+
+.date-cell {
+  white-space: nowrap;
+}
+
+.time-part {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
