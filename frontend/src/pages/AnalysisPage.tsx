@@ -47,7 +47,8 @@ const AnalysisPage: React.FC = () => {
       const analysisResponse = await analyzePost(
         translationResult.originalContent,
         translationResult.translatedContent,
-        translationResult.opTranslation
+        translationResult.opTranslation,
+        translationResult.articleTitle
       );
       
       setAnalysisResult((prev) => prev ? { ...prev, annotations: analysisResponse.annotations } : null);

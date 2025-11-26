@@ -11,11 +11,12 @@ export const translatePost = async (url: string): Promise<AnalysisResult> => {
   return response.data;
 };
 
-export const analyzePost = async (englishSource: string, googleTranslation: string, opTranslation?: string): Promise<{ annotations: Annotation[] }> => {
+export const analyzePost = async (englishSource: string, googleTranslation: string, opTranslation?: string, articleTitle?: string): Promise<{ annotations: Annotation[] }> => {
   const response = await api.post<{ annotations: Annotation[] }>('/proofread/analyze', {
     englishSource,
     googleTranslation,
     opTranslation,
+    articleTitle,
   });
   return response.data;
 };

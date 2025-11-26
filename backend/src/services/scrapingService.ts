@@ -1,24 +1,35 @@
 import axios from 'axios';
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 
 export class PTTScraper {
-  async scrapeArticle(url: string): Promise<string> {
+  async scrapeArticle(url: string): Promise<{ title: string; content: string } | null> {
     try {
       const { data } = await axios.get(url);
-      const $ = cheerio.load(data);
+      const $ = load(data);
 
       const mainContent = $('#main-content');
       if (!mainContent.length) {
         console.warn(`Could not find main-content div for URL: ${url}`);
-        return '';
+        return null;
       }
+
+      // Extract title from article-metaline
+      let title = '';
+      const metalines = mainContent.find('.article-metaline');
+      metalines.each((i: number, el: any) => {
+        const tag = $(el).find('.article-meta-tag').text().trim();
+        const value = $(el).find('.article-meta-value').text().trim();
+        if (tag === '標題') {
+          title = value;
+        }
+      });
 
       // Remove unwanted elements like metadata, push messages, and signature lines
       mainContent.find('.article-metaline').remove();
       mainContent.find('.article-metaline-right').remove();
       mainContent.find('.push').remove();
       // Remove signature lines often starting with '※'
-      mainContent.contents().each((i, el) => {
+      mainContent.contents().each((i: number, el: any) => {
         if (el.type === 'text' && $(el).text().trim().startsWith('※')) {
           $(el).remove();
         }
@@ -33,7 +44,7 @@ export class PTTScraper {
       // Basic cleanup to remove excessive newlines and spaces
       cleanedText = cleanedText.replace(/\n\s*\n/g, '\n').replace(/ +/g, ' ');
 
-      return cleanedText;
+      return { title, content: cleanedText };
     } catch (error) {
       console.error(`Error scraping PTT URL ${url}:`, error);
       throw error;

@@ -10,6 +10,7 @@ export interface AnalysisResult {
   originalContent: string;
   translatedContent: string;
   opTranslation?: string; // The OP's original translation extracted from the post
+  articleTitle?: string;
   annotations: Annotation[];
 }
 

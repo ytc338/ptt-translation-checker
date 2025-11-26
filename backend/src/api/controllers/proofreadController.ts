@@ -22,7 +22,7 @@ export const translatePttPost = async (req: Request, res: Response, next: NextFu
 
 export const analyzeTranslation = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { englishSource, googleTranslation, opTranslation } = req.body;
+    const { englishSource, googleTranslation, opTranslation, articleTitle } = req.body;
 
     if (!englishSource || !googleTranslation) {
       res.status(400).json({ error: 'English source and Google translation are required' });
@@ -38,6 +38,7 @@ export const analyzeTranslation = async (req: Request, res: Response, next: Next
         googleTranslation,
         opTranslation: opTranslation || '',
         proofreadResult: JSON.stringify(annotations),
+        articleTitle: articleTitle || null,
       },
     });
 

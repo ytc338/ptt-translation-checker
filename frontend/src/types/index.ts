@@ -13,5 +13,6 @@ export interface AnalysisResult {
   originalContent: string;
   translatedContent: string;
   opTranslation?: string;
+  articleTitle?: string;
   annotations: Annotation[];
 }
