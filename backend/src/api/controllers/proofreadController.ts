@@ -22,7 +22,7 @@ export const translatePttPost = async (req: Request, res: Response, next: NextFu
 
 export const analyzeTranslation = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { englishSource, googleTranslation, opTranslation, articleTitle } = req.body;
+    const { englishSource, googleTranslation, opTranslation, articleTitle, articleId } = req.body;
 
     if (!englishSource || !googleTranslation) {
       res.status(400).json({ error: 'English source and Google translation are required' });
@@ -32,15 +32,37 @@ export const analyzeTranslation = async (req: Request, res: Response, next: Next
     const annotations = await analysisService.analyzeTranslations(englishSource, googleTranslation, opTranslation);
 
     // Save to DB
-    await prisma.proofreading.create({
-      data: {
-        englishSource,
-        googleTranslation,
-        opTranslation: opTranslation || '',
-        proofreadResult: JSON.stringify(annotations),
-        articleTitle: articleTitle || null,
-      },
-    });
+    // Save to DB (Upsert based on articleId if present, otherwise create)
+    if (articleId) {
+      await prisma.proofreading.upsert({
+        where: { articleId },
+        update: {
+          englishSource,
+          googleTranslation,
+          opTranslation: opTranslation || '',
+          proofreadResult: JSON.stringify(annotations),
+          articleTitle: articleTitle || null,
+        },
+        create: {
+          articleId,
+          englishSource,
+          googleTranslation,
+          opTranslation: opTranslation || '',
+          proofreadResult: JSON.stringify(annotations),
+          articleTitle: articleTitle || null,
+        },
+      });
+    } else {
+      await prisma.proofreading.create({
+        data: {
+          englishSource,
+          googleTranslation,
+          opTranslation: opTranslation || '',
+          proofreadResult: JSON.stringify(annotations),
+          articleTitle: articleTitle || null,
+        },
+      });
+    }
 
     res.json({ annotations });
   } catch (error) {
@@ -58,6 +80,28 @@ export const getHistory = async (req: Request, res: Response, next: NextFunction
       proofreadResult: JSON.parse(item.proofreadResult),
     }));
     res.json(parsedHistory);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProofreadByArticleId = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { articleId } = req.params;
+    const item = await prisma.proofreading.findUnique({
+      where: { articleId },
+    });
+
+    if (!item) {
+      res.status(404).json({ error: 'Analysis not found' });
+      return;
+    }
+
+    const parsedItem = {
+      ...item,
+      proofreadResult: JSON.parse(item.proofreadResult),
+    };
+    res.json(parsedItem);
   } catch (error) {
     next(error);
   }

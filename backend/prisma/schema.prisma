@@ -14,6 +14,7 @@ datasource db {
 model Proofreading {
   id             Int      @id @default(autoincrement())
   createdAt      DateTime @default(now())
+  articleId      String?  @unique
   articleTitle   String?
   englishSource  String
   googleTranslation String @default("")

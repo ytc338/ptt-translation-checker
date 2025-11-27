@@ -6,6 +6,7 @@ import './HistoryPage.css';
 interface HistoryItem {
   id: number;
   createdAt: string;
+  articleId?: string;
   articleTitle: string | null;
   englishSource: string;
   googleTranslation: string;
@@ -37,15 +38,21 @@ const HistoryPage: React.FC = () => {
   }, []);
 
   const handleView = (item: HistoryItem) => {
-    // Navigate to AnalysisPage with state
-    navigate('/', { state: { 
-      initialResult: {
-        originalContent: item.englishSource,
-        translatedContent: item.googleTranslation || item.englishSource, // Fallback for old records
-        opTranslation: item.opTranslation,
-        annotations: item.proofreadResult
-      }
-    } });
+    // Navigate to AnalysisPage with Article ID
+    if (item.articleId) {
+      navigate(`/analysis/${item.articleId}`);
+    } else {
+      // Fallback for old records without articleId
+      navigate('/', { state: { 
+        initialResult: {
+          originalContent: item.englishSource,
+          translatedContent: item.googleTranslation || item.englishSource,
+          opTranslation: item.opTranslation,
+          articleTitle: item.articleTitle,
+          annotations: item.proofreadResult
+        }
+      } });
+    }
   };
 
   if (loading) return <div className="history-page loading"><div className="spinner"></div></div>;

@@ -12,6 +12,7 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<AnalysisPage />} />
+            <Route path="/analysis/:articleId" element={<AnalysisPage />} />
             <Route path="/history" element={<HistoryPage />} />
           </Routes>
         </main>

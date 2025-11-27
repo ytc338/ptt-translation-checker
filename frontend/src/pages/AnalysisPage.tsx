@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { translatePost, analyzePost } from '../services/api';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { translatePost, analyzePost, fetchProofreadByArticleId } from '../services/api';
 import TextView from '../components/TextView';
 import AnnotationList from '../components/AnnotationList';
 import type { AnalysisResult } from '../types'; // Use frontend-specific types
@@ -13,6 +13,8 @@ interface HighlightRange {
 
 const AnalysisPage: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { articleId } = useParams<{ articleId: string }>();
   const [pttUrl, setPttUrl] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -37,6 +39,11 @@ const AnalysisPage: React.FC = () => {
     setAnalyzingAnnotations(false);
 
     try {
+      // Extract Article ID from URL and format it (remove dots and extension)
+      // Example: https://www.ptt.cc/bbs/NBA/M.1732614119.A.706.html -> M1732614119A706
+      const match = pttUrl.match(/M\.\d+\.A\.[A-Z0-9]+/);
+      const extractedArticleId = match ? match[0].replace(/\./g, '') : undefined;
+
       // Step 1: Translate (Fast)
       const translationResult = await translatePost(pttUrl);
       setAnalysisResult(translationResult);
@@ -48,10 +55,16 @@ const AnalysisPage: React.FC = () => {
         translationResult.originalContent,
         translationResult.translatedContent,
         translationResult.opTranslation,
-        translationResult.articleTitle
+        translationResult.articleTitle,
+        extractedArticleId
       );
       
-      setAnalysisResult((prev) => prev ? { ...prev, annotations: analysisResponse.annotations } : null);
+      setAnalysisResult((prev) => prev ? { ...prev, annotations: analysisResponse.annotations, articleId: extractedArticleId } : null);
+
+      // Step 3: Navigate to unique URL
+      if (extractedArticleId) {
+        navigate(`/analysis/${extractedArticleId}`);
+      }
     } catch (err: any) {
       setError(`Error: ${err.message || 'An unknown error occurred.'}`);
       setLoading(false);
@@ -61,11 +74,32 @@ const AnalysisPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (location.state && location.state.initialResult) {
-      setAnalysisResult(location.state.initialResult);
-      // Clear state so refresh doesn't persist it? Or keep it? Keeping it is fine.
-    }
-  }, [location.state]);
+    const loadAnalysis = async () => {
+      if (articleId) {
+        setLoading(true);
+        try {
+          const data = await fetchProofreadByArticleId(articleId);
+          setAnalysisResult({
+            originalContent: data.englishSource,
+            translatedContent: data.googleTranslation,
+            opTranslation: data.opTranslation,
+            articleTitle: data.articleTitle,
+            annotations: data.proofreadResult,
+            articleId: data.articleId,
+          });
+        } catch (err) {
+          setError('Failed to load analysis.');
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      } else if (location.state && location.state.initialResult) {
+        setAnalysisResult(location.state.initialResult);
+      }
+    };
+
+    loadAnalysis();
+  }, [articleId, location.state]);
 
   useEffect(() => {
     if (analysisResult && selectedAnnotationIndex !== null) {

@@ -12,7 +12,8 @@ export interface Annotation {
 export interface AnalysisResult {
   originalContent: string;
   translatedContent: string;
-  opTranslation?: string;
+  opTranslation?: string; // The OP's original translation extracted from the post
   articleTitle?: string;
+  articleId?: string;
   annotations: Annotation[];
 }
