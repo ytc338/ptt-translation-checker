@@ -23,7 +23,7 @@ const AnnotationList: React.FC<AnnotationListProps> = ({
 
   return (
     <div className="annotation-list">
-      <h3>Annotations ({annotations.length})</h3>
+      <h2>Annotations ({annotations.length})</h2>
       {annotations.map((annotation, index) => (
         <div
           key={index}
@@ -32,13 +32,26 @@ const AnnotationList: React.FC<AnnotationListProps> = ({
         >
           <div className="annotation-header">
             <span className="issue-type">{annotation.issueType}</span>
-            <span className="snippet">
-              Original: "{annotation.originalSnippet}" / Translated: "{annotation.translatedSnippet}"
-            </span>
           </div>
+          
+          <div className="snippets-container">
+            <div className="snippet-box original">
+              <span className="label">Original:</span>
+              <span className="text">"{annotation.originalSnippet}"</span>
+            </div>
+            <div className="snippet-box translated">
+              <span className="label">Translated:</span>
+              <span className="text">"{annotation.translatedSnippet}"</span>
+            </div>
+          </div>
+
           <p className="explanation">{annotation.explanation}</p>
+          
           {annotation.suggestion && (
-            <p className="suggestion">Suggestion: {annotation.suggestion}</p>
+            <div className="suggestion-box">
+              <span className="label">Suggestion:</span>
+              <span className="text">{annotation.suggestion}</span>
+            </div>
           )}
         </div>
       ))}

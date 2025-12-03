@@ -2,7 +2,7 @@
 .text-view {
   white-space: pre-wrap; /* Preserves whitespace and wraps text */
   word-wrap: break-word; /* Breaks long words */
-  line-height: 1.8;
+  line-height: 1.5;
   color: var(--text-primary); /* Explicitly set text color */
   font-size: 1rem;
   overflow-y: auto;

@@ -11,3 +11,4 @@
 9.  **new**: Add a proofreading feature to the application. Not only work on NBA but also other Chinese Gossips posts.
 10. **fix**: fix history url 404 error
 11. **URL**: Every entry is a page with unique url.
+12. **Enviroment**: Explore other enviroments. npm, bun, pnpm, yarn, etc.

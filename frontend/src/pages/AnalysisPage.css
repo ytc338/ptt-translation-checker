@@ -3,7 +3,7 @@
   flex-direction: column;
   padding: 2rem;
   gap: 2rem;
-  max-width: 1400px;
+  max-width: 1600px; /* Wide but comfortable */
   margin: 0 auto;
   width: 100%;
 }
@@ -71,7 +71,7 @@ h1 {
 
 .results-section {
   display: grid;
-  grid-template-columns: 1fr 1fr 350px; /* Fixed width for annotations */
+  grid-template-columns: 1fr 1fr 1fr; /* Equal width columns */
   gap: 1.5rem;
   align-items: start;
 }

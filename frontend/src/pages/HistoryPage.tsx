@@ -84,8 +84,14 @@ const HistoryPage: React.FC = () => {
               {history.map((item) => (
                 <tr key={item.id}>
                   <td className="date-cell">
-                    <div className="date-part">{new Date(item.createdAt).toLocaleDateString()}</div>
-                    <div className="time-part">{new Date(item.createdAt).toLocaleTimeString()}</div>
+                    {new Date(item.createdAt).toLocaleString('zh-TW', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false
+                    })}
                   </td>
                   <td className="title-cell" title={item.articleTitle || 'No Title'}>
                     {item.articleTitle ? (item.articleTitle.length > 50 ? item.articleTitle.substring(0, 50) + '...' : item.articleTitle) : '-'}

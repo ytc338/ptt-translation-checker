@@ -42,7 +42,15 @@ export class PTTScraper {
       let cleanedText = mainContent.text().trim();
 
       // Basic cleanup to remove excessive newlines and spaces
-      cleanedText = cleanedText.replace(/\n\s*\n/g, '\n').replace(/ +/g, ' ');
+      // Strategy:
+      // 1. Split by double newlines (paragraphs)
+      // 2. For each paragraph, replace single newlines with spaces (merge lines)
+      // 3. Join paragraphs back with double newlines
+      const paragraphs = cleanedText.split(/\n\s*\n/);
+      cleanedText = paragraphs
+        .map(p => p.replace(/\n/g, ' ').replace(/ +/g, ' ').trim())
+        .filter(p => p.length > 0)
+        .join('\n\n');
 
       return { title, content: cleanedText };
     } catch (error) {

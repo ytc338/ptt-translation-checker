@@ -1,5 +1,5 @@
 .history-page {
-  max-width: 1200px;
+  max-width: 95%;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -54,9 +54,10 @@
   background-color: var(--bg-input);
 }
 
-.snippet-cell {
-  color: var(--text-secondary);
-  max-width: 300px;
+.title-cell {
+  color: var(--text-primary);
+  text-align: left;
+  max-width: 600px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -107,9 +108,7 @@
 
 .date-cell {
   white-space: nowrap;
-}
-
-.time-part {
-  font-size: 0.85em;
-  color: var(--text-muted);
+  font-family: monospace;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
