@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchHistory } from '../services/api';
+import { fetchHistory, deleteHistoryEntry } from '../services/api';
 import './HistoryPage.css';
 
 interface HistoryItem {
@@ -55,6 +55,21 @@ const HistoryPage: React.FC = () => {
     }
   };
 
+  const handleDelete = async (item: HistoryItem) => {
+    const title = item.articleTitle || 'this entry';
+    if (!window.confirm(`Are you sure you want to delete "${title}"?`)) {
+      return;
+    }
+
+    try {
+      await deleteHistoryEntry(item.id);
+      setHistory((prev) => prev.filter((h) => h.id !== item.id));
+    } catch (err) {
+      console.error('Failed to delete history entry:', err);
+      setError('Failed to delete entry.');
+    }
+  };
+
   if (loading) return <div className="history-page loading"><div className="spinner"></div></div>;
   if (error) return <div className="history-page error">{error}</div>;
 
@@ -101,9 +116,12 @@ const HistoryPage: React.FC = () => {
                       {item.proofreadResult.length} Issues
                     </span>
                   </td>
-                  <td>
+                  <td className="actions-cell">
                     <button className="view-btn" onClick={() => handleView(item)}>
                       View Analysis
+                    </button>
+                    <button className="delete-btn" onClick={() => handleDelete(item)}>
+                      Delete
                     </button>
                   </td>
                 </tr>

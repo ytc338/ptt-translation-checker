@@ -32,4 +32,8 @@ export const fetchProofreadByArticleId = async (articleId: string): Promise<any>
   return response.data;
 };
 
+export const deleteHistoryEntry = async (id: number): Promise<void> => {
+  await api.delete(`/proofread/history/${id}`);
+};
+
 export default api;

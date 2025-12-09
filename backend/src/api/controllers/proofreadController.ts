@@ -106,3 +106,23 @@ export const getProofreadByArticleId = async (req: Request, res: Response, next:
     next(error);
   }
 };
+
+export const deleteHistory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const numericId = parseInt(id, 10);
+
+    if (isNaN(numericId)) {
+      res.status(400).json({ error: 'Invalid ID' });
+      return;
+    }
+
+    await prisma.proofreading.delete({
+      where: { id: numericId },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
