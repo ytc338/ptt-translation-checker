@@ -44,6 +44,35 @@ const AnalysisPage: React.FC = () => {
       const match = pttUrl.match(/M\.\d+\.A\.[A-Z0-9]+/);
       const extractedArticleId = match ? match[0].replace(/\./g, '') : undefined;
 
+      // Check for existing analysis
+      if (extractedArticleId) {
+        try {
+          const existingData = await fetchProofreadByArticleId(extractedArticleId);
+          if (existingData) {
+            const useExisting = window.confirm('Analysis for this article already exists.\n\n[OK] Load existing result (Faster)\n[Cancel] Re-analyze (Overwrite)');
+            
+            if (useExisting) {
+              const loadedResult = {
+                originalContent: existingData.englishSource,
+                translatedContent: existingData.googleTranslation,
+                opTranslation: existingData.opTranslation,
+                articleTitle: existingData.articleTitle,
+                annotations: existingData.proofreadResult,
+                articleId: existingData.articleId,
+              };
+              setAnalysisResult(loadedResult);
+              setLoading(false);
+              // Pass the result in state to avoid re-fetching
+              navigate(`/analysis/${extractedArticleId}`, { state: { initialResult: loadedResult } });
+              return; // Stop here if loading existing
+            }
+          }
+        } catch (err: any) {
+          // If 404 or other error, proceed to analysis
+          console.log("Check for existing failed or not found, proceeding to analyze.", err);
+        }
+      }
+
       // Step 1: Translate (Fast)
       const translationResult = await translatePost(pttUrl);
       setAnalysisResult(translationResult);
@@ -63,18 +92,38 @@ const AnalysisPage: React.FC = () => {
 
       // Step 3: Navigate to unique URL
       if (extractedArticleId) {
-        navigate(`/analysis/${extractedArticleId}`);
+        // Pass the fresh result too
+        const formattedResult = {
+            ...translationResult,
+             annotations: analysisResponse.annotations, 
+             articleId: extractedArticleId
+        };
+        navigate(`/analysis/${extractedArticleId}`, { state: { initialResult: formattedResult } });
       }
     } catch (err: any) {
       setError(`Error: ${err.message || 'An unknown error occurred.'}`);
       setLoading(false);
     } finally {
+      // Only set to false if we haven't already finished (e.g. via 'Use Existing')
+      // Actually, if we 'Use Existing', we returned early.
       setAnalyzingAnnotations(false);
     }
   };
 
   useEffect(() => {
     const loadAnalysis = async () => {
+      // Prioritize location state if available and matches the ID (or if we trust it)
+      if (location.state && location.state.initialResult) {
+          // Verify if the state ID matches the param ID to be safe, or just use it if param is absent?
+          // If accessing /analysis/ID directly, location.state is undefined.
+          // If navigating from input, it is defined.
+          // If ID matches, use it.
+          if (!articleId || location.state.initialResult.articleId === articleId) {
+             setAnalysisResult(location.state.initialResult);
+             return;
+          }
+      }
+
       if (articleId) {
         setLoading(true);
         try {
@@ -93,8 +142,6 @@ const AnalysisPage: React.FC = () => {
         } finally {
           setLoading(false);
         }
-      } else if (location.state && location.state.initialResult) {
-        setAnalysisResult(location.state.initialResult);
       }
     };
 
